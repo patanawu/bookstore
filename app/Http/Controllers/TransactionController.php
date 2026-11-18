@@ -2,15 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Book;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class TransactionController extends Controller
 {
-    // Menampilkan semua transaksi beserta data customer dan buku
+    // Admin: melihat seluruh transaksi
     public function index()
     {
-        $transactions = Transaction::with(['customer', 'book'])->get();
+        $transactions = Transaction::with(['customer', 'book'])
+            ->latest()
+            ->get();
 
         return response()->json([
             'success' => true,
@@ -18,18 +24,48 @@ class TransactionController extends Controller
         ]);
     }
 
-    // Membuat transaksi baru
+    // Customer: membuat transaksi
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'order_number' => 'required|string|unique:transactions,order_number',
-            'book_id' => 'required|exists:books,id',
-            'total_amount' => 'required|integer|min:1',
+            'book_id' => 'required|integer|exists:books,id',
+            'quantity' => 'required|integer|min:1',
         ]);
 
-        $validated['customer_id'] = $request->user()->id;
+        $transaction = DB::transaction(function () use ($validated, $request) {
+            $book = Book::whereKey($validated['book_id'])
+                ->lockForUpdate()
+                ->first();
 
-        $transaction = Transaction::create($validated);
+            if (!$book) {
+                throw ValidationException::withMessages([
+                    'book_id' => 'Buku tidak ditemukan.',
+                ]);
+            }
+
+            $quantity = (int) $validated['quantity'];
+
+            if ($quantity > $book->stock) {
+                throw ValidationException::withMessages([
+                    'quantity' => 'Stok buku "' . $book->title . '" tidak mencukupi. Stok tersedia: ' . $book->stock,
+                ]);
+            }
+
+            $orderNumber = 'ORD-' . now()->format('YmdHis')
+                . '-' . strtoupper(Str::random(6));
+
+            $transaction = Transaction::create([
+                'order_number' => $orderNumber,
+                'customer_id' => $request->user()->id,
+                'book_id' => $book->id,
+                'quantity' => $quantity,
+                'total_amount' => $book->price * $quantity,
+            ]);
+
+            $book->decrement('stock', $quantity);
+
+            return $transaction;
+        });
 
         return response()->json([
             'success' => true,
@@ -38,10 +74,12 @@ class TransactionController extends Controller
         ], 201);
     }
 
-    // Menampilkan detail transaksi
-    public function show(string $id)
+    // Customer: hanya melihat transaksi miliknya
+    public function show(Request $request, string $id)
     {
-        $transaction = Transaction::with(['customer', 'book'])->find($id);
+        $transaction = Transaction::with(['customer', 'book'])
+            ->where('customer_id', $request->user()->id)
+            ->find($id);
 
         if (!$transaction) {
             return response()->json([
@@ -53,53 +91,6 @@ class TransactionController extends Controller
         return response()->json([
             'success' => true,
             'data' => $transaction,
-        ]);
-    }
-
-    // Mengubah transaksi
-    public function update(Request $request, string $id)
-    {
-        $transaction = Transaction::find($id);
-
-        if (!$transaction) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Transaksi tidak ditemukan.',
-            ], 404);
-        }
-
-        $validated = $request->validate([
-            'order_number' => 'sometimes|required|string|unique:transactions,order_number,' . $id,
-            'book_id' => 'sometimes|required|exists:books,id',
-            'total_amount' => 'sometimes|required|integer|min:1',
-        ]);
-
-        $transaction->update($validated);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Transaksi berhasil diperbarui.',
-            'data' => $transaction->load(['customer', 'book']),
-        ]);
-    }
-
-    // Menghapus transaksi
-    public function destroy(string $id)
-    {
-        $transaction = Transaction::find($id);
-
-        if (!$transaction) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Transaksi tidak ditemukan.',
-            ], 404);
-        }
-
-        $transaction->delete();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Transaksi berhasil dihapus.',
         ]);
     }
 }

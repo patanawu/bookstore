@@ -8,7 +8,7 @@ use Illuminate\Validation\Rule;
 
 class AuthorController extends Controller
 {
-    // Menampilkan semua author
+    // Menampilkan semua author beserta buku
     public function index()
     {
         return response()->json([
@@ -35,7 +35,7 @@ class AuthorController extends Controller
         ], 201);
     }
 
-    // Menampilkan satu author
+    // Menampilkan detail author
     public function show(string $id)
     {
         $author = Author::with('books')->find($id);
@@ -81,11 +81,11 @@ class AuthorController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Author berhasil diperbarui.',
-            'data' => $author,
+            'data' => $author->fresh(),
         ]);
     }
 
-    // Menghapus author
+    // Menghapus author dengan pemeriksaan relasi buku
     public function destroy(string $id)
     {
         $author = Author::find($id);
@@ -95,6 +95,13 @@ class AuthorController extends Controller
                 'success' => false,
                 'message' => 'Author tidak ditemukan.',
             ], 404);
+        }
+
+        if ($author->books()->exists()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Author tidak dapat dihapus karena masih memiliki buku.',
+            ], 409);
         }
 
         $author->delete();

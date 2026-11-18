@@ -1,4 +1,4 @@
-
+﻿
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -18,18 +18,129 @@
             background: #3987d6;
             border: none;
         }
-    </style>
+    
+/* FIX MODAL BERKEDIP - ADMIN */
+.modal {
+    z-index: 1060;
+}
+
+.modal-backdrop {
+    z-index: 1050;
+}
+
+.modal-dialog {
+    transform: none;
+}
+
+.modal-content {
+    animation: none !important;
+}
+
+body.modal-open .card:hover {
+    transform: none !important;
+}
+</style>
+
+<link rel='stylesheet' href='{{ asset('css/persona5.css') }}'>
+
+<style>
+
+/* PERSONA 5 ADMIN BACKGROUND ONLY */
+
+body[data-persona-admin-bg="1"] {
+    position: relative;
+    isolation: isolate;
+    background-image:
+        radial-gradient(circle at 88% 16%, rgba(237,16,37,.17), transparent 28%),
+        radial-gradient(circle at 8% 85%, rgba(237,16,37,.09), transparent 30%),
+        repeating-linear-gradient(
+            135deg,
+            transparent 0,
+            transparent 38px,
+            rgba(255,255,255,.012) 39px,
+            transparent 41px
+        ) !important;
+    background-attachment: fixed !important;
+}
+
+body[data-persona-admin-bg="1"]::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: .16;
+    background-image: radial-gradient(
+        rgba(255,255,255,.4) .8px,
+        transparent .8px
+    );
+    background-size: 22px 22px;
+}
+
+body[data-persona-admin-bg="1"]::after {
+    content: "\265B";
+    position: fixed;
+    right: 3%;
+    bottom: 1%;
+    z-index: -1;
+    pointer-events: none;
+    color: rgba(237,16,37,.055);
+    font-size: clamp(190px, 28vw, 400px);
+    font-weight: 900;
+    line-height: 1;
+    transform: rotate(-12deg);
+    text-shadow: 0 0 45px rgba(237,16,37,.2);
+    animation: adminPersonaCrown 9s ease-in-out infinite;
+}
+
+@keyframes adminPersonaCrown {
+    0%, 100% {
+        transform: translateY(0) rotate(-12deg);
+        opacity: .65;
+    }
+    50% {
+        transform: translateY(-14px) rotate(-8deg);
+        opacity: 1;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body[data-persona-admin-bg="1"]::after {
+        animation: none;
+    }
+}
+
+
+/* FIX MODAL BERKEDIP - ADMIN */
+.modal {
+    z-index: 1060;
+}
+
+.modal-backdrop {
+    z-index: 1050;
+}
+
+.modal-dialog {
+    transform: none;
+}
+
+.modal-content {
+    animation: none !important;
+}
+
+body.modal-open .card:hover {
+    transform: none !important;
+}
+</style>
 </head>
-<body>
+<body data-persona-admin-bg="1">
 <div class="container py-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h2 class="fw-bold">Kelola Author</h2>
             <p class="text-muted">Daftar dan tambah data penulis buku.</p>
         </div>
-        <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-primary">
-            Kembali ke Dashboard
-        </a>
+        <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-primary" title="Kembali ke Dashboard" aria-label="Kembali ke Dashboard">&#8592;</a>
     </div>
 
     @if (session('success'))
@@ -204,3 +315,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
+
+
+

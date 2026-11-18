@@ -1,0 +1,70 @@
+/* PERSONA 5 - SHARED BUTTON SHAPE BASED ON HOME */
+
+.p5-btn,
+.btn,
+.btn-blue,
+.btn-green,
+.btn-red,
+.btn-outline,
+.btn-gray,
+.button,
+.logout-button,
+button[type="submit"] {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    padding: 13px 21px !important;
+    border-radius: 0 !important;
+    font-family: 'Inter', Arial, sans-serif !important;
+    font-size: 12px !important;
+    font-weight: 900 !important;
+    letter-spacing: 1px !important;
+    line-height: 1.4 !important;
+    text-transform: uppercase !important;
+    text-decoration: none !important;
+    cursor: pointer !important;
+    clip-path: polygon(0 0,100% 0,100% 78%,91% 100%,0 100%) !important;
+    transition: transform .2s, background .2s !important;
+}
+
+.p5-btn:hover,
+.btn:hover,
+.btn-blue:hover,
+.btn-green:hover,
+.btn-red:hover,
+.btn-outline:hover,
+.btn-gray:hover,
+.button:hover,
+.logout-button:hover,
+button[type="submit"]:hover {
+    transform: translateY(-3px) skew(-2deg) !important;
+}
+
+/* Outline: same as Home */
+.btn-outline {
+    clip-path: none !important;
+}
+
+/* Preserve each button's existing color identity */
+.btn-green,
+.btn-blue {
+    background: #ed1c24 !important;
+    color: #fff !important;
+}
+
+.btn-red {
+    background: #ed1c24 !important;
+    color: #fff !important;
+}
+
+.btn-gray {
+    background: #292929 !important;
+    color: #fff !important;
+}
+
+.logout-button {
+    background: transparent !important;
+    color: #ed1c24 !important;
+}
+

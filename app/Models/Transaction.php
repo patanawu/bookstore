@@ -12,6 +12,10 @@ class Transaction extends Model
         'customer_id',
         'book_id',
         'total_amount',
+        'quantity',
+        'status',
+        'payment_method',
+        'payment_status',
     ];
 
     public function customer(): BelongsTo

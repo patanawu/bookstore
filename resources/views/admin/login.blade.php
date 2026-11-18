@@ -25,8 +25,79 @@
             border: none;
         }
     </style>
+
+<link rel='stylesheet' href='{{ asset('css/persona5.css') }}'>
+
+<style>
+
+/* PERSONA 5 ADMIN BACKGROUND ONLY */
+
+body[data-persona-admin-bg="1"] {
+    position: relative;
+    isolation: isolate;
+    background-image:
+        radial-gradient(circle at 88% 16%, rgba(237,16,37,.17), transparent 28%),
+        radial-gradient(circle at 8% 85%, rgba(237,16,37,.09), transparent 30%),
+        repeating-linear-gradient(
+            135deg,
+            transparent 0,
+            transparent 38px,
+            rgba(255,255,255,.012) 39px,
+            transparent 41px
+        ) !important;
+    background-attachment: fixed !important;
+}
+
+body[data-persona-admin-bg="1"]::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: .16;
+    background-image: radial-gradient(
+        rgba(255,255,255,.4) .8px,
+        transparent .8px
+    );
+    background-size: 22px 22px;
+}
+
+body[data-persona-admin-bg="1"]::after {
+    content: "\265B";
+    position: fixed;
+    right: 3%;
+    bottom: 1%;
+    z-index: -1;
+    pointer-events: none;
+    color: rgba(237,16,37,.055);
+    font-size: clamp(190px, 28vw, 400px);
+    font-weight: 900;
+    line-height: 1;
+    transform: rotate(-12deg);
+    text-shadow: 0 0 45px rgba(237,16,37,.2);
+    animation: adminPersonaCrown 9s ease-in-out infinite;
+}
+
+@keyframes adminPersonaCrown {
+    0%, 100% {
+        transform: translateY(0) rotate(-12deg);
+        opacity: .65;
+    }
+    50% {
+        transform: translateY(-14px) rotate(-8deg);
+        opacity: 1;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body[data-persona-admin-bg="1"]::after {
+        animation: none;
+    }
+}
+
+</style>
 </head>
-<body>
+<body data-persona-admin-bg="1">
     <div class="card login-card shadow p-4">
         <div class="text-center mb-4">
             <h3 class="fw-bold">BookSales</h3>
@@ -61,3 +132,4 @@
     </div>
 </body>
 </html>
+

@@ -12,7 +12,7 @@ class GenreController extends Controller
     {
         return response()->json([
             'success' => true,
-            'data' => Genre::all(),
+            'data' => Genre::with('books')->get(),
         ]);
     }
 
@@ -32,10 +32,10 @@ class GenreController extends Controller
         ], 201);
     }
 
-    // Menampilkan satu genre
+    // Menampilkan detail genre
     public function show(string $id)
     {
-        $genre = Genre::find($id);
+        $genre = Genre::with('books')->find($id);
 
         if (!$genre) {
             return response()->json([
@@ -71,11 +71,11 @@ class GenreController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Genre berhasil diperbarui.',
-            'data' => $genre,
+            'data' => $genre->fresh(),
         ]);
     }
 
-    // Menghapus genre
+    // Menghapus genre dengan pemeriksaan relasi buku
     public function destroy(string $id)
     {
         $genre = Genre::find($id);
@@ -85,6 +85,13 @@ class GenreController extends Controller
                 'success' => false,
                 'message' => 'Genre tidak ditemukan.',
             ], 404);
+        }
+
+        if ($genre->books()->exists()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Genre tidak dapat dihapus karena masih digunakan oleh buku.',
+            ], 409);
         }
 
         $genre->delete();

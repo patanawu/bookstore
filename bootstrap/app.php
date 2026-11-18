@@ -1,4 +1,3 @@
-
 <?php
 
 use Illuminate\Foundation\Application;
@@ -13,14 +12,26 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
+            'customer' => \App\Http\Middleware\CustomerMiddleware::class,
         ]);
+
+        // Redirect pengguna yang belum login
+        $middleware->redirectGuestsTo(
+            fn ($request) => $request->is('admin') || $request->is('admin/*')
+                ? '/admin/login'
+                : '/login'
+        );
+
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+
         $exceptions->shouldRenderJsonWhen(
             fn ($request, $exception) => $request->is('api/*')
                 || $request->expectsJson()
         );
+
     })
     ->create();

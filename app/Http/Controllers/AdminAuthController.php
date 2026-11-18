@@ -16,18 +16,22 @@ class AdminAuthController extends Controller
     {
         $credentials = $request->validate([
             'email' => 'required|email',
-            'password' => 'required',
+            'password' => 'required|string',
         ]);
 
         if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
-
             if (Auth::user()->role !== 'admin') {
                 Auth::logout();
+
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+
                 return back()->withErrors([
                     'email' => 'Akun ini bukan akun admin.',
                 ]);
             }
+
+            $request->session()->regenerate();
 
             return redirect()->route('admin.dashboard');
         }
@@ -44,6 +48,6 @@ class AdminAuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('admin.login');
+        return redirect()->route('login');
     }
 }

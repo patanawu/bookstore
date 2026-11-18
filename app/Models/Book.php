@@ -23,6 +23,11 @@ class Book extends Model
         return $this->belongsTo(Author::class);
     }
 
+    public function genre(): BelongsTo
+    {
+        return $this->belongsTo(Genre::class);
+    }
+
     public function transactions(): HasMany
     {
         return $this->hasMany(Transaction::class);
